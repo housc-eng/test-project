@@ -48,13 +48,6 @@ except ImportError:
 
 # ==================== 登录页面 ====================
 def login_page():
-    # 页面配置
-    st.set_page_config(
-        page_title="校园生活百事通",
-        page_icon="🏫",
-        layout="centered"
-    )
-    
     # ===== 登录页面CSS - 完全重构 =====
     st.markdown("""
     <style>
@@ -322,16 +315,6 @@ def login_page():
     # ===== 单个白色卡片 - 包含所有内容 =====
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     
-    # # Logo
-    # st.markdown("""
-    # <div class="login-logo">
-    #     <div class="icon-box">
-    #         <span>🏫</span>
-    #     </div>
-    #     <div class="title">校园<span class="hl">百事通</span></div>
-    # </div>
-    # """, unsafe_allow_html=True)
-    
     # Slogan
     st.markdown("""
     <div class="slogan">
@@ -374,23 +357,21 @@ def login_page():
         st.markdown(f'<div class="error-msg">❌ {st.session_state.login_error}</div>', unsafe_allow_html=True)
         st.session_state.login_error = None
     
-    # 用户名
+    # ✅ 修复：使用 label 参数，而不是 label_visibility
     username = st.text_input(
-        "",
+        "用户名",
         value=st.session_state.get("login_username", ""),
         placeholder="请输入用户名",
-        key="login_username_input",
-        label_visibility="collapsed"
+        key="login_username_input"
     )
     
-    # 密码
+    # ✅ 修复：使用 label 参数，而不是 label_visibility
     password = st.text_input(
-        "",
+        "密码",
         value=st.session_state.get("login_password", ""),
         placeholder="请输入密码 (默认: 123456)",
         type="password",
-        key="login_password_input",
-        label_visibility="collapsed"
+        key="login_password_input"
     )
     
     # 登录按钮
@@ -442,37 +423,7 @@ def login_page():
 
 # ==================== 主应用 ====================
 def main_app():
-    # ==================== 页面配置 ====================
-    st.set_page_config(
-        page_title="校园生活百事通",
-        page_icon="🏫",
-        layout="wide",
-        initial_sidebar_state="collapsed"
-    )
-
-    # ==================== 初始化会话状态 ====================
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-    if "conversation_history" not in st.session_state:
-        st.session_state.conversation_history = []
-    if "current_conversation" not in st.session_state:
-        st.session_state.current_conversation = []
-    if "conversation_id" not in st.session_state:
-        st.session_state.conversation_id = 0
-    if "quick_question" not in st.session_state:
-        st.session_state.quick_question = None
-    if "show_tool" not in st.session_state:
-        st.session_state.show_tool = None
-    if "export_dialog" not in st.session_state:
-        st.session_state.export_dialog = False
-    if "new_conversation" not in st.session_state:
-        st.session_state.new_conversation = False
-    if "show_user_info" not in st.session_state:
-        st.session_state.show_user_info = False
-    if "user_info_timestamp" not in st.session_state:
-        st.session_state.user_info_timestamp = 0
-
-    # ==================== 自定义CSS ====================
+    # ===== 主应用CSS =====
     st.markdown("""
     <style>
         * { font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
@@ -507,7 +458,7 @@ def main_app():
         }
         [data-testid="stSidebar"][aria-expanded="false"] > div { display: none !important; }
         
-        /* ===== 侧边栏标题样式 - 百事通颜色 ===== */
+        /* ===== 侧边栏标题样式 ===== */
         .sidebar-title {
             font-size: 0.85rem;
             font-weight: 700;
@@ -577,7 +528,6 @@ def main_app():
             transform: translateY(-2px) !important;
             box-shadow: 0 4px 16px rgba(102,126,234,0.10) !important;
         }
-        /* 用户信息按钮特殊样式 */
         .user-info-grid .stButton:first-child button {
             background: rgba(102,126,234,0.08) !important;
             color: #4a4a6a !important;
@@ -593,7 +543,7 @@ def main_app():
             border-color: rgba(239, 68, 68, 0.2) !important;
         }
         
-        /* ===== 用户信息提示框 - 一列显示 ===== */
+        /* ===== 用户信息提示框 ===== */
         .user-info-toast {
             background: rgba(255,255,255,0.95) !important;
             border-radius: 12px !important;
@@ -821,7 +771,7 @@ def main_app():
             border: 1px solid rgba(102,126,234,0.06);
         }
         
-        /* ===== 搜索输入框 - 响应式自适应 ===== */
+        /* ===== 搜索输入框 ===== */
         .stChatInput {
             position: fixed !important;
             bottom: 24px !important;
@@ -837,7 +787,6 @@ def main_app():
             transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
         }
         
-        /* 当侧边栏收起时，搜索框宽度增大 */
         [data-testid="stSidebar"][aria-expanded="false"] ~ .stChatInput {
             width: calc(100% - 80px) !important;
             max-width: 900px !important;
@@ -916,7 +865,6 @@ def main_app():
         }
         .footer .heart { color: #e74c6f; }
         
-        /* ===== 响应式 - 移动端 ===== */
         @media (max-width: 768px) {
             .stChatInput {
                 width: 92% !important;
@@ -965,9 +913,28 @@ def main_app():
     </style>
     """, unsafe_allow_html=True)
     
-    # ==================== 用户信息（已移到侧边栏） ====================
-    # 不再在主页面显示用户信息栏
-    
+    # ==================== 初始化会话状态 ====================
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    if "conversation_history" not in st.session_state:
+        st.session_state.conversation_history = []
+    if "current_conversation" not in st.session_state:
+        st.session_state.current_conversation = []
+    if "conversation_id" not in st.session_state:
+        st.session_state.conversation_id = 0
+    if "quick_question" not in st.session_state:
+        st.session_state.quick_question = None
+    if "show_tool" not in st.session_state:
+        st.session_state.show_tool = None
+    if "export_dialog" not in st.session_state:
+        st.session_state.export_dialog = False
+    if "new_conversation" not in st.session_state:
+        st.session_state.new_conversation = False
+    if "show_user_info" not in st.session_state:
+        st.session_state.show_user_info = False
+    if "user_info_timestamp" not in st.session_state:
+        st.session_state.user_info_timestamp = 0
+
     # ==================== 工具函数 ====================
     try:
         from tools import calculate_gpa, get_current_week
@@ -1013,7 +980,7 @@ def main_app():
         st.markdown("""
         <div class="sidebar-logo">
             <div class="icon">🏫</div>
-            <div class="title"><span class="highlight">校园生活百事通</span></h1></div>
+            <div class="title"><span class="highlight">校园生活百事通</span></div>
             <div class="sub">AI 智能校园助手</div>
         </div>
         """, unsafe_allow_html=True)
@@ -1021,15 +988,12 @@ def main_app():
         user_info = st.session_state.get("user_info", {})
         
         # ===== 用户信息提示框（一列显示，3秒后自动消失） =====
-        # 检查是否需要显示用户信息
         current_time = time.time()
         if st.session_state.show_user_info:
-            # 如果显示时间超过3秒，自动隐藏
             if current_time - st.session_state.user_info_timestamp > 2:
                 st.session_state.show_user_info = False
                 st.rerun()
             else:
-                # 显示用户信息
                 st.markdown(f"""
                 <div class="user-info-toast">
                     <div class="label">👤 当前用户</div>
@@ -1041,11 +1005,9 @@ def main_app():
         
         st.markdown('<div class="user-info-grid">', unsafe_allow_html=True)
         
-        # 用户信息按钮（左列）
         col1, col2 = st.columns(2)
         with col1:
             if st.button(f"👤 {user_info.get('name', '用户')} · {user_info.get('role', '访客')}", key="user_info_btn", use_container_width=True):
-                # 切换显示状态
                 st.session_state.show_user_info = not st.session_state.show_user_info
                 if st.session_state.show_user_info:
                     st.session_state.user_info_timestamp = time.time()
@@ -1060,11 +1022,9 @@ def main_app():
         
         st.markdown('</div>', unsafe_allow_html=True)
         
-        
         # ===== 添加新对话按钮 =====
         st.markdown('<div class="new-conversation-btn">', unsafe_allow_html=True)
         if st.button("➕ 添加新对话", key="new_conversation_btn", use_container_width=True):
-            # 保存当前对话到历史
             if st.session_state.messages:
                 conv_id = st.session_state.conversation_id + 1
                 st.session_state.conversation_id = conv_id
@@ -1074,7 +1034,6 @@ def main_app():
                     "messages": st.session_state.messages.copy(),
                     "time": datetime.now().strftime("%Y-%m-%d %H:%M")
                 })
-            # 清空当前对话
             st.session_state.messages = []
             st.session_state.new_conversation = True
             st.rerun()
@@ -1084,17 +1043,14 @@ def main_app():
         st.markdown('<div class="sidebar-title">📜 历史对话</div>', unsafe_allow_html=True)
         
         if st.session_state.conversation_history:
-            # 显示历史对话列表（倒序，最新的在前面）
             for conv in reversed(st.session_state.conversation_history):
                 col1, col2 = st.columns([4, 1])
                 with col1:
                     if st.button(f"💬 {conv['title']}", key=f"history_{conv['id']}", use_container_width=True):
-                        # 加载选中的历史对话
                         st.session_state.messages = conv["messages"].copy()
                         st.rerun()
                 with col2:
                     if st.button("🗑️", key=f"del_{conv['id']}"):
-                        # 删除历史对话
                         st.session_state.conversation_history = [c for c in st.session_state.conversation_history if c["id"] != conv["id"]]
                         st.rerun()
                 st.caption(f"🕐 {conv['time']}")
@@ -1161,7 +1117,6 @@ def main_app():
         
         st.divider()
         
-        # 统计
         if st.session_state.messages:
             total = len(st.session_state.messages)
             user_msgs = sum(1 for m in st.session_state.messages if m["role"] == "user")
@@ -1173,7 +1128,6 @@ def main_app():
             </div>
             """, unsafe_allow_html=True)
         
-        # 控制按钮
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🗑️ 清空", use_container_width=True):
@@ -1352,7 +1306,6 @@ def main_app():
         </div>
         """, unsafe_allow_html=True)
         
-        # 快捷功能
         st.markdown("""
         <div style="background:#fff;border-radius:12px;padding:0.6rem 0.8rem;border:1px solid rgba(102,126,234,0.06);margin-bottom:0.6rem;">
             <div style="font-size:0.6rem;color:#999;text-transform:uppercase;letter-spacing:0.5px;">⚡ 快捷功能</div>
@@ -1371,7 +1324,6 @@ def main_app():
         
         st.markdown('</div></div>', unsafe_allow_html=True)
         
-        # 今日热点
         st.markdown("""
         <div style="background:#fff;border-radius:12px;padding:0.6rem 0.8rem;border:1px solid rgba(102,126,234,0.06);">
             <div style="font-size:0.6rem;color:#999;text-transform:uppercase;letter-spacing:0.5px;">📋 今日热点</div>
@@ -1407,19 +1359,26 @@ def main_app():
 
 
 # ==================== 程序入口 ====================
-if __name__ == "__main__":
-    # 初始化Session状态
-    if "logged_in" not in st.session_state:
-        st.session_state.logged_in = False
-    if "login_username" not in st.session_state:
-        st.session_state.login_username = ""
-    if "login_password" not in st.session_state:
-        st.session_state.login_password = ""
-    if "login_error" not in st.session_state:
-        st.session_state.login_error = None
-    
-    # 判断是否登录
-    if st.session_state.get("logged_in", False):
-        main_app()
-    else:
-        login_page()
+# ✅ 修复：将 st.set_page_config 放在最前面，只调用一次
+st.set_page_config(
+    page_title="校园生活百事通",
+    page_icon="🏫",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# 初始化Session状态
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "login_username" not in st.session_state:
+    st.session_state.login_username = ""
+if "login_password" not in st.session_state:
+    st.session_state.login_password = ""
+if "login_error" not in st.session_state:
+    st.session_state.login_error = None
+
+# 判断是否登录
+if st.session_state.get("logged_in", False):
+    main_app()
+else:
+    login_page()
