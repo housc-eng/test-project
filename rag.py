@@ -11,8 +11,48 @@ from prompt_templates import RAG_PROMPT
 # ---------------------- 1. 加载环境变量、DeepSeek客户端 ----------------------
 load_dotenv()
 
+# ✅ 修改：优先从 Streamlit Secrets 获取 API Key（云端），其次从环境变量获取（本地）
+def get_api_key():
+    """获取API密钥，优先从Streamlit Secrets获取，其次从环境变量获取"""
+    # 方法1：尝试从 Streamlit Secrets 获取
+    try:
+        import streamlit as st
+        # 检查是否在 Streamlit 环境中
+        if hasattr(st, 'secrets'):
+            key = st.secrets.get("DEEPSEEK_API_KEY")
+            if key:
+                print("✅ 从 Streamlit Secrets 获取到 API Key")
+                return key
+    except Exception as e:
+        # 不在 Streamlit 环境中，忽略
+        pass
+    
+    # 方法2：从环境变量获取（本地开发）
+    key = os.getenv("DEEPSEEK_API_KEY")
+    if key:
+        print("✅ 从环境变量获取到 API Key")
+        return key
+    
+    # 方法3：尝试从 .env 文件直接读取（备用）
+    try:
+        from dotenv import dotenv_values
+        config = dotenv_values(".env")
+        key = config.get("DEEPSEEK_API_KEY")
+        if key:
+            print("✅ 从 .env 文件获取到 API Key")
+            return key
+    except:
+        pass
+    
+    print("❌ 警告：未找到 DEEPSEEK_API_KEY")
+    return None
+
+# 获取 API Key
+api_key = get_api_key()
+
+# 初始化 OpenAI 客户端
 client = OpenAI(
-    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    api_key=api_key,
     base_url="https://api.deepseek.com"
 )
 
@@ -65,5 +105,6 @@ if __name__ == "__main__":
         print(f"【测试问题{idx}】{q}")
         ans = rag_answer(q)
         print(f"【模型回答】{ans}\n" + "-"*60 + "\n")
-        # ========== 新增导出语句，放在文件最末尾 ==========
+        
+# ========== 导出语句，放在文件最末尾 ==========
 __all__ = ["vector_db", "client", "RAG_PROMPT", "rag_answer"]
