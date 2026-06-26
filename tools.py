@@ -48,9 +48,9 @@ def chat_tool(user_text):
 
 # 交互入口：自主输入分数/文字计算
 if __name__ == "__main__":
-    print("===== 智能体工具计算器 =====")
+    print("===== 智能工具：周数查询与绩点计算器 =====")
     while True:
-        user_input = input("\n请输入问题：")
+        user_input = input("\n请输入你的问题：")
         # 输入exit退出程序
         if user_input.lower() == "exit":
             print("程序退出")
